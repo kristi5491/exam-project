@@ -27,5 +27,11 @@ router.get("/:id", getRoom);
 router.get("/", getRooms);
 
 
+/**
+ * POST /rooms/:roomId
+ * body: { bookedFrom: '2023-04-28T00:00:00Z', bookedTo: '2023-05-08T00:00:00Z' }
+ */
+
+
 
 export default router;
