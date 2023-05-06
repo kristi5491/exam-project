@@ -101,29 +101,35 @@ export const bookRoom = async (req, res, next) => {
     }
 
     if (room.booked.from === "" && room.booked.to === "") {
-      const docs = room.updateOne(update)
-      return res.status(200).send(docs)
-    }
+      const docs = room.updateOne({
+        $set: {
+          booked: {
+            from: from, to: to
+          }
+        }
+      })
+    return res.status(200).send(docs)
+  }
 
     if (from) {
-      dbQuery['booked.to'] = { $gte: from }
-    }
-
-    if (to) {
-      dbQuery['booked.from'] = { $lte: to }
-    }
-
-    const roomAvailability = await room.find(dbQuery);
-
-    if (!roomAvailability === null || !roomAvailability === undefined) {
-      const docs = await Room.findOneAndUpdate(roomId, update);
-      return res.status(200).send(docs)
-    } else {
-      return res.status(400).json('Room unavailable')
-    }
-
-
-  } catch (err) {
-    next(err);
+    dbQuery['booked.to'] = { $gte: from }
   }
+
+  if (to) {
+    dbQuery['booked.from'] = { $lte: to }
+  }
+
+  const roomAvailability = await room.find(dbQuery);
+
+  if (!roomAvailability === null || !roomAvailability === undefined) {
+    const docs = await Room.findOneAndUpdate(roomId, update);
+    return res.status(200).send(docs)
+  } else {
+    return res.status(400).json('Room unavailable')
+  }
+
+
+} catch (err) {
+  next(err);
+}
 }
