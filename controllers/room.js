@@ -92,6 +92,18 @@ export const bookRoom = async (req, res, next) => {
       return res.status(404).json('Room havent been found')
     }
 
+    const update = {
+      $set: {
+        booked: {
+          from: from, to: to
+        }
+      }
+    }
+
+    if (room.booked.from === "" && room.booked.to === "") {
+      const docs = room.updateOne(update)
+      return res.status(200).send(docs)
+    }
 
     if (from) {
       dbQuery['booked.to'] = { $gte: from }
@@ -102,14 +114,6 @@ export const bookRoom = async (req, res, next) => {
     }
 
     const roomAvailability = await room.find(dbQuery);
-
-    const update = {
-      $set: {
-        booked: {
-          from: from, to: to
-        }
-      }
-    }
 
     if (!roomAvailability === null || !roomAvailability === undefined) {
       const docs = await Room.findOneAndUpdate(roomId, update);
