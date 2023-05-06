@@ -18,8 +18,8 @@ const RoomSchema = new mongoose.Schema(
       required: true,
     },
     booked: {
-      from: { type: Date },
-      to: { type: Date }
+      from: { type: Date, default: ""},
+      to: { type: Date, default: "" }
     }
   },
   { timestamps: true }
