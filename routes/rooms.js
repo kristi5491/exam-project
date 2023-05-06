@@ -5,6 +5,7 @@ import {
     getRoom,
     getRooms,
     updateRoom,
+    bookRoom,
     // updateRoomAvailability,
   } from "../controllers/room.js";
 import { verifyAdmin } from "../utils/verifyToken.js";
@@ -26,12 +27,7 @@ router.get("/:id", getRoom);
 
 router.get("/", getRooms);
 
-
-/**
- * POST /rooms/:roomId
- * body: { bookedFrom: '2023-04-28T00:00:00Z', bookedTo: '2023-05-08T00:00:00Z' }
- */
-
+router.post('/rooms/:roomId', bookRoom);
 
 
 export default router;
