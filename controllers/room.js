@@ -112,7 +112,7 @@ export const bookRoom = async (req, res, next) => {
     }
 
     if (!roomAvailability === null || !roomAvailability === undefined) {
-      const docs = await Room.updateOne(dbQuery, update);
+      const docs = await Room.findOneAndUpdate(roomId, update);
       return res.status(200).send(docs)
     } else {
       return res.status(400).json('Room unavailable')
