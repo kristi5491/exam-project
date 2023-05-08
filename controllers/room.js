@@ -88,7 +88,10 @@ export const bookRoom = async (req, res, next) => {
 
   try {
     const room = await Room.findById(roomId);
-    if (!room) {
+
+    if (room) {
+      dbQuery.roomId = roomId;
+    } else {
       return res.status(404).json('Room havent been found')
     }
 
@@ -108,16 +111,14 @@ export const bookRoom = async (req, res, next) => {
       dbQuery['booked.from'] = { $lte: to }
     }
 
-    const roomAvailability = await room.find(dbQuery);
+    const docs = await Room.findOneAndUpdate(dbQuery, update);
 
-    if ((!roomAvailability === null || !roomAvailability === undefined) || (room.booked.from === "" && room.booked.to === "")) {
-      const docs = await Room.findOneAndUpdate(roomId, update);
+    if (docs) {
       return res.status(200).send(docs)
     } else {
       return res.status(400).json('Room unavailable')
     }
-
-
+    
   } catch (err) {
     next(err);
   }
