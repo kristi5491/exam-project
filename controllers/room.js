@@ -84,7 +84,7 @@ export const bookRoom = async (req, res, next) => {
   const dbQuery = {};
   const { from, to } = req.body;
 
-  const roomId = req.params.id
+  const roomId = req.params.id;
 
   try {
     const room = await Room.findById(roomId);
