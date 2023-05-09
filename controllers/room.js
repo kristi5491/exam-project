@@ -103,10 +103,10 @@ export const bookRoom = async (req, res, next) => {
       dbQuery['booked.from'] = { $lte: to }
     }
 
-    const docs = await Room.findOneAndUpdate(dbQuery, {
-      booked: {
+    const docs = await Room.findByIdAndUpdate(roomId, {
+      $push: { booked: {
         from: from, to: to
-      }
+      } }
     });
 
     if (docs) {

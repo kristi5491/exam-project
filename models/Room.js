@@ -17,10 +17,10 @@ const RoomSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    booked: {
+    booked: [{
       from: { type: Date, default: ""},
       to: { type: Date, default: "" }
-    }
+    }]
   },
   { timestamps: true }
 );
