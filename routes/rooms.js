@@ -27,7 +27,7 @@ router.get("/:id", getRoom);
 
 router.get("/", getRooms);
 
-router.post('/rooms/:roomId', bookRoom);
+router.put('/rooms/:roomId', bookRoom);
 
 
 export default router;
