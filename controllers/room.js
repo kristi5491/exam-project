@@ -96,24 +96,20 @@ export const bookRoom = async (req, res, next) => {
     }
 
     const {booked } = room;
-    /**
-     * booked: [
-     *   { from: '2023-05-01', to: '2023-05-10' },
-     *   { from: '2023-05-20', to: '2023-05-21' },
-     *   { from: '2023-05-12', to: '2023-05-14' },
-     * ]
-     */
-    // from => '2023-05-25'
-    // to => '2023-06-01'
-    // if (from) {
-    //   dbQuery['booked.to'] = { $gte: from }
-    // }
 
-    // if (to) {
-    //   dbQuery['booked.from'] = { $lte: to }
-    // }
-  // 
-  const docs = await Room.findOneAndUpdate(dbQuery, {
+    booked.forEach((book) => {
+      const {from, to } = book;
+      let bookedFrom = from;
+      let bookedTo = to;
+      if(bookedFrom <= from <= bookedTo) {
+        return res.status(404).json('Room unavailable')
+      }
+      if(bookedFrom <= to <= bookedTo) {
+        return res.status(404).json('Room unavailable')
+      }
+    })
+
+  const docs = await Room.updateOne({_id: roomId}, {
       $push: { booked: {
         from: from, to: to
       } }
