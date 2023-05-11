@@ -95,24 +95,33 @@ export const bookRoom = async (req, res, next) => {
       return res.status(404).json('Room havent been found')
     }
 
-    const {booked } = room;
+    const { booked } = room;
 
-    booked.forEach((book) => {
-      const {from, to } = book;
+    const isRoomAvailable = booked.find((book) => {
+      const { from, to } = book;
       let bookedFrom = from;
       let bookedTo = to;
-      if(bookedFrom <= from <= bookedTo) {
-        return res.status(404).json('Room unavailable')
-      }
-      if(bookedFrom <= to <= bookedTo) {
-        return res.status(404).json('Room unavailable')
-      }
-    })
 
-  const docs = await Room.updateOne({_id: roomId}, {
-      $push: { booked: {
-        from: from, to: to
-      } }
+      if (bookedFrom <= from && from <= bookedTo) {
+        return true;
+      }
+      else if (bookedFrom <= to && to <= bookedTo) {
+        return true;
+      }
+
+      return false;
+    });
+
+    if (isRoomAvailable) {
+      return res.status(404).json('Room unavailable')
+    }
+
+    const docs = await Room.updateOne({ _id: roomId }, {
+      $push: {
+        booked: {
+          from: from, to: to
+        }
+      }
     });
 
     if (docs) {
