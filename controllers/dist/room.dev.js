@@ -226,7 +226,7 @@ var getRooms = function getRooms(req, res, next) {
 exports.getRooms = getRooms;
 
 var bookRoom = function bookRoom(req, res, next) {
-  var dbQuery, _req$body, from, to, roomId, room, booked, docs;
+  var dbQuery, _req$body, from, to, roomId, room, booked, isRoomAvailable, docs;
 
   return regeneratorRuntime.async(function bookRoom$(_context6) {
     while (1) {
@@ -256,22 +256,31 @@ var bookRoom = function bookRoom(req, res, next) {
 
         case 12:
           booked = room.booked;
-          booked.forEach(function (book) {
+          isRoomAvailable = booked.find(function (book) {
             var from = book.from,
                 to = book.to;
             var bookedFrom = from;
             var bookedTo = to;
 
-            if (bookedFrom <= from <= bookedTo) {
-              return res.status(404).json('Room unavailable');
+            if (bookedFrom <= from && from <= bookedTo) {
+              return true;
+            } else if (bookedFrom <= to && to <= bookedTo) {
+              return true;
             }
 
-            if (bookedFrom <= to <= bookedTo) {
-              return res.status(404).json('Room unavailable');
-            }
+            return false;
           });
-          _context6.next = 16;
-          return regeneratorRuntime.awrap(_Room["default"].updateOne({
+
+          if (!isRoomAvailable) {
+            _context6.next = 16;
+            break;
+          }
+
+          return _context6.abrupt("return", res.status(404).json('Room unavailable'));
+
+        case 16:
+          _context6.next = 18;
+          return regeneratorRuntime.awrap(_Room["default"].findOneAndUpdate({
             _id: roomId
           }, {
             $push: {
@@ -282,34 +291,34 @@ var bookRoom = function bookRoom(req, res, next) {
             }
           }));
 
-        case 16:
+        case 18:
           docs = _context6.sent;
 
           if (!docs) {
-            _context6.next = 21;
+            _context6.next = 23;
             break;
           }
 
           return _context6.abrupt("return", res.status(200).send(docs));
 
-        case 21:
+        case 23:
           return _context6.abrupt("return", res.status(400).json('Room unavailable'));
 
-        case 22:
-          _context6.next = 27;
+        case 24:
+          _context6.next = 29;
           break;
 
-        case 24:
-          _context6.prev = 24;
+        case 26:
+          _context6.prev = 26;
           _context6.t0 = _context6["catch"](3);
           next(_context6.t0);
 
-        case 27:
+        case 29:
         case "end":
           return _context6.stop();
       }
     }
-  }, null, null, [[3, 24]]);
+  }, null, null, [[3, 26]]);
 };
 
 exports.bookRoom = bookRoom;

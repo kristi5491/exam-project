@@ -84,39 +84,41 @@ export const bookRoom = async (req, res, next) => {
   const dbQuery = {};
   const { from, to } = req.body;
 
-  const roomId = req.params.id;
+  const roomId = req.params.roomId;
 
   try {
     const room = await Room.findById(roomId);
 
-    if (room) {
-      dbQuery.roomId = roomId;
-    } else {
+    if (!room) {
       return res.status(404).json('Room havent been found')
+    } 
+
+    let isRoomAvailable = true;
+
+    const checkAvailability = async () => {
+      room.booked.find((book) => {
+        let bookFrom = JSON.stringify(book.from);
+        let bookTo = JSON.stringify(book.to);
+  
+        let checkFrom = JSON.stringify(from);
+        let checkTo = JSON.stringify(to)
+        
+        if (bookFrom <= checkFrom && checkFrom <= bookTo) {
+          return isRoomAvailable = false;
+        }
+        else if (bookFrom <= checkTo && checkTo <= bookTo) {
+          return isRoomAvailable = false;
+        }
+      })
     }
 
-    const { booked } = room;
+    await checkAvailability();
 
-    const isRoomAvailable = booked.find((book) => {
-      const { from, to } = book;
-      let bookedFrom = from;
-      let bookedTo = to;
-
-      if (bookedFrom <= from && from <= bookedTo) {
-        return true;
-      }
-      else if (bookedFrom <= to && to <= bookedTo) {
-        return true;
-      }
-
-      return false;
-    });
-
-    if (isRoomAvailable) {
+    if (isRoomAvailable === false) {
       return res.status(404).json('Room unavailable')
     }
 
-    const docs = await Room.updateOne({ _id: roomId }, {
+    const docs = await Room.findByIdAndUpdate( roomId , {
       $push: {
         booked: {
           from: from, to: to
