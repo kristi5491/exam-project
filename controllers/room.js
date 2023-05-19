@@ -2,6 +2,7 @@ import Room from "../models/Room.js";
 import Hotel from "../models/Hotel.js";
 import { createError } from "../utils/error.js";
 
+ //saved room in BD and update the hotel1 with reference to the room
 export const createRoom = async (req, res, next) => {
   const hotelId = req.params.hotelid;
   const newRoom = new Room(req.body);
@@ -65,7 +66,7 @@ export const deleteRoom = async (req, res, next) => {
 };
 export const getRoom = async (req, res, next) => {
   try {
-    const room = await Room.findById(req.params.id);
+    const room = await Room.findById(req.params.id);//отримати кіинату 
     res.status(200).json(room);
   } catch (err) {
     next(err);
@@ -124,7 +125,7 @@ export const bookRoom = async (req, res, next) => {
           from: from, to: to
         }
       }
-    });
+    }, { new: true });
 
     if (docs) {
       return res.status(200).send(docs)
