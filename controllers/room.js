@@ -84,6 +84,10 @@ export const bookRoom = async (req, res, next) => {
   const dbQuery = {};
   const { from, to } = req.body;
 
+  if(from <= to) {
+    return res.status(400).json('Cant be booked')
+  }
+
   const roomId = req.params.roomId;
 
   try {
